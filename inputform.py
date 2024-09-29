@@ -9,12 +9,12 @@ def load_csv(file_path):
     except UnicodeDecodeError:
         return pd.read_csv(file_path, encoding='ISO-8859-1')
 
-# Append a new row to the CSV file and save it
-def append_to_csv(file_path, data):
+# Prepend a new row to the CSV file and save it
+def prepend_to_csv(file_path, data):
     df = load_csv(file_path)
-    new_row = pd.DataFrame([data])
-    df = pd.concat([df, new_row], ignore_index=True)
-    df.to_csv(file_path, index=False)
+    new_row = pd.DataFrame([data])  # Convert the new data to a DataFrame
+    df = pd.concat([new_row, df], ignore_index=True)  # Prepend the new row to the existing DataFrame
+    df.to_csv(file_path, index=False)  # Save the updated DataFrame back to the CSV
 
 # Generate input fields dynamically based on CSV columns
 def generate_input_form(columns):
@@ -29,43 +29,48 @@ def validate_input(input_data):
 
 # Streamlit app
 def app():
-    st.title("CSV Input Form")
-    
-    # Center-align the content using columns
-    col1, col2, col3 = st.columns([1, 2, 1])  # Adjusts for spacing
-    
-    with col2:  # Center content in the middle column
-        # Define the CSV file path
-        file_path = 'TokyoOlymics/Athletes.csv'
-        
-        # Load the CSV and get column names
-        df = load_csv(file_path)
-        
-        if df.empty:
-            st.warning(f"No existing data found in {file_path}. A new CSV will be created.")
-            columns = ['Name', 'NOC', 'Discipline']  # Replace with your desired column names
-        else:
-            columns = df.columns.tolist()
-        
-        # Streamlit form for data input
+    # Center align the title
+    st.markdown("<h1 style='text-align: center;'>CSV Input Form</h1>", unsafe_allow_html=True)
+
+    # Add a bit of row space between the title and content below
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # Define the CSV file path
+    file_path = 'TokyoOlymics/Athletes.csv'
+
+    # Load the CSV and get column names
+    df = load_csv(file_path)
+
+    if df.empty:
+        st.warning(f"No existing data found in {file_path}. A new CSV will be created.")
+        columns = ['Name', 'NOC', 'Discipline']  # Replace with your desired column names
+    else:
+        columns = df.columns.tolist()
+
+    # Layout: Form on the left, CSV preview on the right
+    col1, col2 = st.columns([1.2, 1.5])  # Adjust ratio to increase the form width
+
+    # Left column: Form for input
+    with col1:
+        st.markdown("### Enter Details:")
         with st.form("input_form"):
-            st.write("Enter the values for each column:")
             input_data = generate_input_form(columns)
             
             # Form submission
             submitted = st.form_submit_button("Submit")
             if submitted:
                 if validate_input(input_data):
-                    append_to_csv(file_path, input_data)
-                    st.success("Data has been added to the CSV!")
+                    prepend_to_csv(file_path, input_data)  # Call the new prepend function
+                    st.success("Data has been added to the top of the CSV!")
+                    st.rerun()  # Refresh the page to show updated data
                 else:
                     st.error("Please fill in all the fields.")
     
-    # Display the updated CSV content if not empty
-    if not df.empty:
-        with col2:  # Again, center-align the DataFrame
-            st.write("Current data in the CSV:")
-            st.dataframe(df)
+    # Right column: Display the CSV content
+    with col2:
+        st.markdown("### Preview CSV Data:")
+        if not df.empty:
+            st.dataframe(load_csv(file_path))  # Load and display the latest CSV data
 
 if __name__ == '__main__':
-    app()
+    app()                       
