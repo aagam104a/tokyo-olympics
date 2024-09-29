@@ -27,45 +27,14 @@ def generate_input_form(columns):
 def validate_input(input_data):
     return all(input_data.values())
 
-# Add custom CSS to center align content
-def apply_custom_css():
-    st.markdown(
-        """
-        <style>
-        .centered-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .centered-form {
-            max-width: 400px;
-            width: 100%;
-        }
-        .stButton > button {
-            display: block;
-            margin: 0 auto;
-        }
-        .css-1aumxhk.e1fqkh3o2 {
-            justify-content: center;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
 # Streamlit app
 def app():
-    # Apply custom CSS for centering
-    apply_custom_css()
-
-    # Centered container for the form and content
-    with st.container():
-        st.markdown('<div class="centered-container">', unsafe_allow_html=True)
-        
-        st.title("CSV Input Form")
-        
+    st.title("CSV Input Form")
+    
+    # Center-align the content using columns
+    col1, col2, col3 = st.columns([1, 2, 1])  # Adjusts for spacing
+    
+    with col2:  # Center content in the middle column
         # Define the CSV file path
         file_path = 'TokyoOlymics/Athletes.csv'
         
@@ -78,9 +47,8 @@ def app():
         else:
             columns = df.columns.tolist()
         
-        # Centered form for data input
+        # Streamlit form for data input
         with st.form("input_form"):
-            st.markdown('<div class="centered-form">', unsafe_allow_html=True)
             st.write("Enter the values for each column:")
             input_data = generate_input_form(columns)
             
@@ -92,14 +60,12 @@ def app():
                     st.success("Data has been added to the CSV!")
                 else:
                     st.error("Please fill in all the fields.")
-            st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Display the updated CSV content if not empty
-        if not df.empty:
+    
+    # Display the updated CSV content if not empty
+    if not df.empty:
+        with col2:  # Again, center-align the DataFrame
             st.write("Current data in the CSV:")
             st.dataframe(df)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == '__main__':
     app()
