@@ -22,7 +22,7 @@ def app():
     st.title("CSV Input Form")
     
     # Define the CSV file path
-    file_path = r"TokyoOpymics\Athletes.csv"
+    file_path = 'TokyoOlymics/Athletes.csv'
     
     # Load the CSV to get column names
     df = load_csv(file_path)
