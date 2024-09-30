@@ -16,6 +16,12 @@ def prepend_to_csv(file_path, data):
     df = pd.concat([new_row, df], ignore_index=True)  # Prepend the new row to the existing DataFrame
     df.to_csv(file_path, index=False)  # Save the updated DataFrame back to the CSV
 
+# Remove duplicates based on the 'Name' column and update the CSV
+def remove_duplicates(file_path):
+    df = load_csv(file_path)
+    df_cleaned = df.drop_duplicates(subset=['Name'], keep='first')  # Remove duplicates based on 'Name'
+    df_cleaned.to_csv(file_path, index=False)  # Sync the cleaned data to the CSV file
+
 # Generate input fields dynamically based on CSV columns
 def generate_input_form(columns):
     input_data = {}
@@ -62,7 +68,7 @@ def app():
                 if validate_input(input_data):
                     prepend_to_csv(file_path, input_data)  # Call the new prepend function
                     st.success("Data has been added to the top of the CSV!")
-                    st.rerun()  # Refresh the page to show updated data
+                    st.experimental_rerun()  # Refresh the page to show updated data
                 else:
                     st.error("Please fill in all the fields.")
     
@@ -72,5 +78,11 @@ def app():
         if not df.empty:
             st.dataframe(load_csv(file_path))  # Load and display the latest CSV data
 
+        # Add a button to remove duplicates
+        if st.button("Remove Duplicates by Name"):
+            remove_duplicates(file_path)
+            st.success("Duplicates have been removed!")
+            st.experimental_rerun()  # Refresh the page to show updated data
+
 if __name__ == '__main__':
-    app()                       
+    app()
