@@ -68,7 +68,7 @@ def app():
                 if validate_input(input_data):
                     prepend_to_csv(file_path, input_data)  # Call the new prepend function
                     st.success("Data has been added to the top of the CSV!")
-                    st.experimental_rerun()  # Refresh the page to show updated data
+                    st.rerun()  # Refresh the page to show updated data
                 else:
                     st.error("Please fill in all the fields.")
     
@@ -82,7 +82,7 @@ def app():
         if st.button("Remove Duplicates by Name"):
             remove_duplicates(file_path)
             st.success("Duplicates have been removed!")
-            st.experimental_rerun()  # Refresh the page to show updated data
+            st.rerun()  # Refresh the page to show updated data
 
 if __name__ == '__main__':
     app()
